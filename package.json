@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/usage.test.ts"
+    "test": "node --experimental-strip-types --test src/usage.test.ts src/usage.fix.test.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260813.1",

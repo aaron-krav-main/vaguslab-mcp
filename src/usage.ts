@@ -11,6 +11,8 @@
 
 const UA_CHARS = 80
 const QUERY_CHARS = 200
+// The name comes from the caller; Analytics Engine caps an index at 96 bytes.
+const TOOL_CHARS = 64
 
 export type Protocol = "mcp" | "a2a"
 
@@ -24,10 +26,12 @@ export function toolCallPoint(
   userAgent: string | null,
   protocol: Protocol,
 ): { blobs: string[]; indexes: string[]; doubles: number[] } {
-  const query = typeof args.query === "string" ? args.query : ""
+  const name = tool.slice(0, TOOL_CHARS)
+  // The README promises a query for search_research only; other tools take none.
+  const query = tool === "search_research" && typeof args.query === "string" ? args.query : ""
   return {
-    blobs: [tool, (userAgent ?? "").slice(0, UA_CHARS), query.slice(0, QUERY_CHARS), protocol],
-    indexes: [tool],
+    blobs: [name, (userAgent ?? "").slice(0, UA_CHARS), query.slice(0, QUERY_CHARS), protocol],
+    indexes: [name],
     doubles: [1],
   }
 }
