@@ -17,6 +17,7 @@
  * dependency to keep current with a moving spec.
  */
 import { runTool, TOOLS, type Env } from "./skills"
+import { recordToolCall } from "./usage"
 
 /** Canonical origin. The card must not echo whatever Host a caller sends. */
 const SITE = "https://vaguslab.net"
@@ -108,7 +109,7 @@ async function withinRateLimit(env: Env, request: Request): Promise<boolean> {
 
 // --- MCP ---------------------------------------------------------------------
 
-async function handleMcp(env: Env, body: JsonRpcRequest): Promise<Response> {
+async function handleMcp(env: Env, body: JsonRpcRequest, userAgent: string | null): Promise<Response> {
   const { id, method, params } = body
 
   switch (method) {
@@ -137,6 +138,7 @@ async function handleMcp(env: Env, body: JsonRpcRequest): Promise<Response> {
         string,
         unknown
       >
+      recordToolCall(env, name, args, userAgent, "mcp")
       try {
         const result = await runTool(env, name, args)
         return rpcResult(id, {
@@ -202,7 +204,7 @@ function a2aText(params: Record<string, unknown> | undefined): string {
     .trim()
 }
 
-async function handleA2a(env: Env, body: JsonRpcRequest): Promise<Response> {
+async function handleA2a(env: Env, body: JsonRpcRequest, userAgent: string | null): Promise<Response> {
   const { id, method, params } = body
 
   /**
@@ -224,6 +226,7 @@ async function handleA2a(env: Env, body: JsonRpcRequest): Promise<Response> {
     }
     try {
       const args = skillId === "search_research" ? { query: text } : {}
+      recordToolCall(env, skillId, args, userAgent, "a2a")
       const result = await runTool(env, skillId, args)
       return rpcResult(id, {
         kind: "message",
@@ -403,6 +406,7 @@ export default {
       return new Response(null, { status: 202, headers: CORS_HEADERS })
     }
 
-    return path === "/a2a" ? handleA2a(env, body) : handleMcp(env, body)
+    const userAgent = request.headers.get("user-agent")
+    return path === "/a2a" ? handleA2a(env, body, userAgent) : handleMcp(env, body, userAgent)
   },
 }

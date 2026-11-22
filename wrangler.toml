@@ -36,5 +36,12 @@ type = "ratelimit"
 namespace_id = "1002"
 simple = { limit = 30, period = 60 }
 
+# Real-use counter: one point per tools/call (tool, user agent, query, protocol;
+# no IP). Directory probes never call tools, so this is the number that means
+# something. Read by scripts/seo/ai_visibility.py for the Monday digest.
+[[analytics_engine_datasets]]
+binding = "AGENT_CALLS"
+dataset = "vaguslab_agent_calls"
+
 [observability]
 enabled = true

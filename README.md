@@ -26,8 +26,12 @@ Three tools, all read-only:
 
 - **No generation model.** The server returns passages; your own model writes the
   answer. No call to Claude or any other LLM happens here.
-- **No writes, no accounts, no auth.** Nothing you send is stored beyond standard
-  Cloudflare request logs.
+- **No writes, no accounts, no auth.**
+- **What we record.** For each tool call: the tool name, your client's user agent
+  (first 80 characters), the `search_research` query (first 200 characters), and
+  whether it came over MCP or A2A. No IP address, no other arguments. It tells us
+  whether anyone actually uses this server and what they ask. See `src/usage.ts`.
+  Cloudflare also keeps its standard request logs.
 - **Capped exposure.** Snippets are cut at 480 characters, at most 10 per call, and
   each IP gets 30 requests per minute.
 

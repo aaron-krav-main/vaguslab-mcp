@@ -19,6 +19,8 @@ export interface Env {
   AGENT_LIMIT?: { limit(opts: { key: string }): Promise<{ success: boolean }> }
   /** Origin the public JSON is read from. Overridden only to test against a local build. */
   SITE_ORIGIN?: string
+  /** Workers Analytics Engine: one point per tool call, see usage.ts. */
+  AGENT_CALLS?: AnalyticsEngineDataset
 }
 
 /** Same model that embedded the corpus. A different one silently degrades results. */
