@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "net.vaguslab/research",
+  "title": "Vagus Lab Research",
+  "description": "Cited VNS research passages from a curated corpus, plus a scored device comparison.",
+  "version": "1.1.0",
+  "websiteUrl": "https://vaguslab.net/api-docs/",
+  "icons": [
+    {
+      "src": "https://vaguslab.net/apple-touch-icon.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "180x180"
+      ]
+    },
+    {
+      "src": "https://vaguslab.net/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/aaron-krav-main/vaguslab-mcp",
+    "source": "github",
+    "id": "1467582508"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://vaguslab.net/mcp"
+    }
+  ]
+}

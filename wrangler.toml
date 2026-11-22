@@ -1,0 +1,40 @@
+name = "vaguslab-agents"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Two protocol surfaces over the same three read-only skills:
+#   /mcp  Model Context Protocol, Streamable HTTP transport
+#   /a2a  A2A, JSON-RPC binding
+# Kept out of the assistant worker on purpose. That one is the conversion
+# surface for the on-site widget and spends Claude tokens per call; this one
+# never calls a generation model, so a bug or a flood here cannot touch the
+# widget or the bill.
+routes = [
+  { pattern = "vaguslab.net/mcp", zone_name = "vaguslab.net" },
+  # /mcp/server-card, the location the Server Card extension recommends relative
+  # to the transport URL. Without this pattern the path falls through to Pages,
+  # whose asset router 308s it to a trailing slash.
+  { pattern = "vaguslab.net/mcp/*", zone_name = "vaguslab.net" },
+  { pattern = "vaguslab.net/a2a", zone_name = "vaguslab.net" }
+]
+
+# Embedding only (@cf/baai/bge-base-en-v1.5, the model that embedded the
+# corpus). No Claude call lives in this worker.
+[ai]
+binding = "AI"
+# Workers AI has no local emulation: the binding always hits the real service.
+# Explicit here so `wrangler dev` proxies it instead of warning about it.
+remote = true
+
+# Per-IP cap. Retrieval is cheap but not free: every corpus search is one
+# Workers AI embedding plus one Neon query, and an unmetered public endpoint
+# is an open tab on someone else's card.
+[[unsafe.bindings]]
+name = "AGENT_LIMIT"
+type = "ratelimit"
+namespace_id = "1002"
+simple = { limit = 30, period = 60 }
+
+[observability]
+enabled = true
